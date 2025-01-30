@@ -4,6 +4,8 @@ import random
 class Duck:
     def __init__(self, screen_width, screen_height, sprite_path1, sprite_path2):
         """Initialize the duck with animation and movement"""
+        self.screen_width = screen_width
+        self.screen_height = screen_height
         self.image1 = pygame.image.load(sprite_path1).convert_alpha()
         self.image2 = pygame.image.load(sprite_path2).convert_alpha()
         self.flipped_image1 = pygame.transform.flip(self.image1, True, False)
@@ -24,6 +26,8 @@ class Duck:
         self.speed_x = 3
         self.speed_y = -3
 
+        self.flying_off_screen = False
+
         self.facing_right = self.speed_x > 0  # Set direction based on speed
 
         self.respawn()  # Set initial position at the grass level
@@ -33,11 +37,24 @@ class Duck:
         self.animation_speed = 10
         self.current_frame = 0
 
+    def make_duck_fly_off(self):
+        """Make the duck fly off the screen"""
+        self.flying_off_screen = True
+
     def move(self):
         """Moves the duck and ensures it bounces correctly"""
         if self.alive:
             self.rect.x += self.speed_x
             self.rect.y += self.speed_y
+
+            if self.flying_off_screen:
+                # Allow the duck to move outside the window without bouncing
+                if (self.rect.y < -self.rect.height or
+                        self.rect.x < -self.rect.width or
+                        self.rect.x > self.screen_width):
+                    self.flying_off_screen = False
+                    self.respawn()
+                return  # Skip boundary checks if flying off
 
             # Chance to move on zigzag
             if random.randint(1, 100) < 5:  # 5% chance to change vertical direction

@@ -17,6 +17,9 @@ class Gameplay:
         self.score = 0
         self.lives = 3
         self.shots_remaining = 3
+        self.scope = pygame.image.load("assets/scope.png").convert_alpha()
+        self.smaller_scope = pygame.transform.scale(self.scope, (40, 40))
+        pygame.mouse.set_visible(False)
 
     def check_shooting(self, mouse_pos):
         """Check if the duck was shot"""
@@ -63,13 +66,17 @@ class Gameplay:
             shots_text = self.font.render(f"Shots: {self.shots_remaining}", True, (255, 255, 255))
             
             self.screen.blit(score_text, (500, 490))
-            self.screen.blit(lives_text, (300, 490))
-            self.screen.blit(shots_text, (100, 490))
+            self.screen.blit(lives_text, (240, 490))
+            self.screen.blit(shots_text, (50, 490))
 
             self.duck.update_respawn()
             self.duck.move()
             self.duck.animate()
             self.duck.draw(self.screen)
+
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            scope_rect = self.smaller_scope.get_rect(center=(mouse_x, mouse_y))
+            self.screen.blit(self.smaller_scope, scope_rect)
 
             pygame.display.flip()
             self.clock.tick(60)

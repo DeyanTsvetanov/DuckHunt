@@ -6,13 +6,12 @@ class Duck:
         """Initialize the duck with animation and movement"""
         self.screen_width = screen_width
         self.screen_height = screen_height
-        # Load the sprite sheet and extract frames
         self.sprite_sheet = pygame.image.load(sprite_path).convert_alpha()
         self.frames = self.load_frames(self.sprite_sheet, frame_width=85, frame_height=90)
         self.current_frame_index = 0
         self.image = self.frames[self.current_frame_index]
         self.rect = self.image.get_rect()
-        self.duck_type = duck_type  # New attribute to identify duck type
+        self.duck_type = duck_type
 
         # Define the flying window (800x360)
         self.x_min = 0
@@ -23,7 +22,6 @@ class Duck:
         # Add movement speed
         self.speed_x = 3
         self.speed_y = -3
-
         
         self.flying_off_screen = False
 
@@ -39,7 +37,7 @@ class Duck:
         self.waiting_to_respawn = False
         self.respawn_timer_start = None
         self.respawn_delay = 2.0
-        self.alive = True  # Tracks if the duck is visible or not
+        self.alive = True
 
     def load_frames(self, sprite_sheet, frame_width, frame_height):
         """Extract frames from a sprite sheet"""
@@ -47,7 +45,7 @@ class Duck:
         sheet_width, sheet_height = sprite_sheet.get_size()
         
         for x in range(0, sheet_width, frame_width):
-            if x + frame_width <= sheet_width:  # Prevent out-of-bounds frame extraction
+            if x + frame_width <= sheet_width:
                 frame = sprite_sheet.subsurface((x, 0, frame_width, frame_height))
                 frames.append(frame)
         return frames

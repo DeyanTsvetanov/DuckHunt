@@ -137,7 +137,7 @@ class Duck:
                 self.waiting_to_respawn = False
                 self.alive = True
 
-                # Spawn the duck at a random x position and the grass level
+                # Spawn the duck at a random x position on the grass level
                 self.rect.x = random.randint(self.x_min, self.x_max)
                 self.rect.y = self.y_max
 

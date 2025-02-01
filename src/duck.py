@@ -2,17 +2,17 @@ import pygame
 import random
 
 class Duck:
-    def __init__(self, screen_width, screen_height, sprite_path):
+    def __init__(self, screen_width, screen_height, sprite_path, duck_type):
         """Initialize the duck with animation and movement"""
         self.screen_width = screen_width
         self.screen_height = screen_height
-
         # Load the sprite sheet and extract frames
         self.sprite_sheet = pygame.image.load(sprite_path).convert_alpha()
         self.frames = self.load_frames(self.sprite_sheet, frame_width=85, frame_height=90)
         self.current_frame_index = 0
         self.image = self.frames[self.current_frame_index]
         self.rect = self.image.get_rect()
+        self.duck_type = duck_type  # New attribute to identify duck type
 
         # Define the flying window (800x360)
         self.x_min = 0
@@ -24,17 +24,22 @@ class Duck:
         self.speed_x = 3
         self.speed_y = -3
 
-        self.alive = True  # Tracks if the duck is visible or not
+        
         self.flying_off_screen = False
 
         self.facing_right = self.speed_x > 0  # Set direction based on speed
 
-        self.respawn()  # Set initial position at the grass level
+        self.respawn(initial_spawn=True)
         
         # Animation settings
         self.animation_timer = 0
         self.animation_speed = 10
         self.current_frame = 0
+
+        self.waiting_to_respawn = False
+        self.respawn_timer_start = None
+        self.respawn_delay = 2.0
+        self.alive = True  # Tracks if the duck is visible or not
 
     def load_frames(self, sprite_sheet, frame_width, frame_height):
         """Extract frames from a sprite sheet"""
@@ -101,31 +106,44 @@ class Duck:
         """Draw the duck on the screen"""
         screen.blit(self.image, self.rect)
 
-    def respawn(self):
-        """Hides the duck before respawning after a delay, resets direction, and increases speed"""
-        self.alive = False
-        self.respawn_timer = pygame.time.get_ticks() + 1000  # 1 second delay
+    def respawn(self, initial_spawn=False):
+        """Respawns the duck at a valid position, either on the first spawn or after a delay."""
+        self.waiting_to_respawn = True
+        self.respawn_timer_start = pygame.time.get_ticks()
 
-        # Move the duck off-screen
-        self.rect.x = -100
-        self.rect.y = -100
-
-        # Increase speed after each respawn
-        self.speed_x = abs(self.speed_x) * 1.1
-        self.speed_y = -abs(self.speed_y) * 1.1
-
-        self.facing_right = True
-
-    def update_respawn(self):
-        """Respawns the duck after a delay with increased speed"""
-        if not self.alive and pygame.time.get_ticks() >= self.respawn_timer:
-            self.alive = True
-            self.respawn_timer = 0
-            
-            # Duck gets a new position
+        if initial_spawn:
+            # Set the position correctly for the first spawn
             self.rect.x = random.randint(self.x_min, self.x_max)
             self.rect.y = self.y_max
+            self.alive = True
+            self.waiting_to_respawn = False  # Skip delay for the first appearance
+        else:
+            # Move the duck off-screen temporarily during the delay
+            self.rect.x = -100
+            self.rect.y = -100
+            self.alive = False
 
-            # Duck moves right and up after respawning
-            self.speed_x = abs(self.speed_x)
-            self.speed_y = -abs(self.speed_y)
+        # Increase speed on every respawn
+        self.speed_x *= 1.1
+        self.speed_y *= 1.1
+
+        # Ensure the duck keeps moving right and up
+        self.speed_x = abs(self.speed_x)
+        self.speed_y = -abs(self.speed_y)
+
+    def handle_respawn(self):
+        """Respawns the duck after the delay has passed."""
+        if self.waiting_to_respawn:
+            elapsed_time = (pygame.time.get_ticks() - self.respawn_timer_start) / 1000
+            if elapsed_time >= self.respawn_delay:
+                self.waiting_to_respawn = False
+                self.alive = True
+
+                # Spawn the duck at a random x position and the grass level
+                self.rect.x = random.randint(self.x_min, self.x_max)
+                self.rect.y = self.y_max
+
+                # Ensure it starts moving right and upwards
+                self.speed_x = abs(self.speed_x)  # Start moving right
+                self.speed_y = -abs(self.speed_y)  # Start moving upwards
+                self.facing_right = True

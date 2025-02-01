@@ -10,11 +10,14 @@ class Gameplay:
         self.screen = self.setup.get_screen()
         self.background = self.setup.get_background()
         self.duck = [
-            Duck(self.setup.screen_width, 360, "assets/final_normal_duck.png"),
-            Duck(self.setup.screen_width, 360, "assets/final_red_duck.png"),
-            Duck(self.setup.screen_width, 360, "assets/final_special_duck.png")
+            Duck(self.setup.screen_width, 360, "assets/final_normal_duck.png", "normal"),
+            Duck(self.setup.screen_width, 360, "assets/final_red_duck.png", "red"),
+            Duck(self.setup.screen_width, 360, "assets/final_special_duck.png", "special")
         ]
         self.current_duck = self.duck[0]
+        self.new_duck_timer_start = None
+        self.duck_switch_delay = 2.0
+
         pygame.font.init()
         self.font = pygame.font.SysFont("Arial Black", 30)
         self.score = 0
@@ -27,16 +30,32 @@ class Gameplay:
         self.smaller_scope = pygame.transform.scale(self.scope, (40, 40))
         pygame.mouse.set_visible(False)
 
+    def switch_duck_with_delay(self):
+        """Switch to a new duck after the specified delay"""
+        if self.new_duck_timer_start is None:
+            # Start the timer when switching is triggered
+            self.new_duck_timer_start = pygame.time.get_ticks()
+
+        elapsed_time = (pygame.time.get_ticks() - self.new_duck_timer_start) / 1000
+        if elapsed_time >= self.duck_switch_delay:
+            # Delay has passed, switch to a new duck and reset the timer
+            self.new_duck_timer_start = None
+            self.current_duck = random.choice(self.duck)
+            self.current_duck.respawn()
+
     def check_shooting(self, mouse_pos):
         """Check if the duck was shot"""
-        if self.current_duck.rect.collidepoint(mouse_pos):
-            self.score += 50
+        if self.current_duck.alive and self.current_duck.rect.collidepoint(mouse_pos):
+            if self.current_duck.alive and self.current_duck.rect.collidepoint(mouse_pos):
+                if self.current_duck.duck_type == "special":
+                    self.score += 100
+                elif self.current_duck.duck_type == "normal":
+                    self.score += 50
+                elif self.current_duck.duck_type == "red":
+                    self.score -= 25
             self.current_duck.respawn()
             self.shots_remaining = 3
-
-            # Set a timer for the next duck
-            #self.next_duck_timer = pygame.time.get_ticks() + 1000  # 1-second delay
-            self.current_duck = random.choice(self.duck)
+            self.switch_duck_with_delay()  # Initiate the delay for switching ducks
         else:
             self.shots_remaining -= 1
 
@@ -79,9 +98,11 @@ class Gameplay:
             self.screen.blit(lives_text, (240, 490))
             self.screen.blit(shots_text, (50, 490))
 
-            self.current_duck.update_respawn()
-            self.current_duck.move()
-            self.current_duck.draw(self.screen)
+            # Handle duck respawn and movement
+            self.current_duck.handle_respawn()
+            if self.current_duck.alive:
+                self.current_duck.move()
+                self.current_duck.draw(self.screen)
 
             mouse_x, mouse_y = pygame.mouse.get_pos()
             scope_rect = self.smaller_scope.get_rect(center=(mouse_x, mouse_y))

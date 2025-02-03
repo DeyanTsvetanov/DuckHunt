@@ -23,7 +23,6 @@ class Gameplay:
         self.score = 0
         self.clock = pygame.time.Clock()
         self.running = True
-        self.score = 0
         self.lives = 3
         self.shots_remaining = 3
         self.scope = pygame.image.load("assets/scope.png").convert_alpha()
@@ -46,16 +45,13 @@ class Gameplay:
     def check_shooting(self, mouse_pos):
         """Check if the duck was shot"""
         if self.current_duck.alive and self.current_duck.rect.collidepoint(mouse_pos):
-            if self.current_duck.alive and self.current_duck.rect.collidepoint(mouse_pos):
-                if self.current_duck.duck_type == "special":
-                    self.score += 100
-                elif self.current_duck.duck_type == "normal":
-                    self.score += 50
-                elif self.current_duck.duck_type == "red":
-                    self.score -= 25
+            points = {"special": 100, "normal": 50, "red": -25}
+            self.score += points.get(self.current_duck.duck_type)
+            if self.score < 0:
+                self.scope = 0
             self.current_duck.respawn()
             self.shots_remaining = 3
-            self.switch_duck_with_delay()  # Initiate the delay for switching ducks
+            self.switch_duck_with_delay()
         else:
             self.shots_remaining -= 1
 

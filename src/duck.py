@@ -27,6 +27,8 @@ class Duck:
 
         self.facing_right = self.speed_x > 0  # Set direction based on speed
 
+        self.spawn_time = 0  # Track duck's time on the screen
+
         self.respawn(initial_spawn=True)
         
         # Animation settings
@@ -36,7 +38,7 @@ class Duck:
 
         self.waiting_to_respawn = False
         self.respawn_timer_start = None
-        self.respawn_delay = 2.0
+        self.respawn_delay = 1.0
         self.alive = True
 
     def load_frames(self, sprite_sheet, frame_width, frame_height):
@@ -58,6 +60,10 @@ class Duck:
     def move(self):
         """Moves the duck and ensures it bounces correctly"""
         if self.alive:
+            time_on_screen = (pygame.time.get_ticks() - self.spawn_time) / 1000
+            if time_on_screen > 10:
+                self.make_duck_fly_off()
+
             self.rect.x += self.speed_x
             self.rect.y += self.speed_y
 
@@ -108,6 +114,7 @@ class Duck:
         """Respawns the duck at a valid position, either on the first spawn or after a delay."""
         self.waiting_to_respawn = True
         self.respawn_timer_start = pygame.time.get_ticks()
+        self.flying_off_screen = False
 
         if initial_spawn:
             # Set the position correctly for the first spawn
@@ -129,6 +136,9 @@ class Duck:
         self.speed_x = abs(self.speed_x)
         self.speed_y = -abs(self.speed_y)
 
+        # Start the timer for flying
+        self.spawn_time = pygame.time.get_ticks()
+
     def handle_respawn(self):
         """Respawns the duck after the delay has passed."""
         if self.waiting_to_respawn:
@@ -137,7 +147,7 @@ class Duck:
                 self.waiting_to_respawn = False
                 self.alive = True
 
-                # Spawn the duck at a random x position on the grass level
+                # Spawn the duck at a random position on the grass level
                 self.rect.x = random.randint(self.x_min, self.x_max)
                 self.rect.y = self.y_max
 

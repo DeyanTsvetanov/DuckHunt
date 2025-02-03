@@ -1,6 +1,7 @@
 import pygame
 from src.duck import Duck
 from src.setup import Setup
+from src.menu import Menu
 import random
 
 class Gameplay:
@@ -70,6 +71,12 @@ class Gameplay:
         self.screen.blit(game_over_text, text_rect)
         pygame.display.flip()
         pygame.time.wait(3000)
+
+    def start(self):
+        """Start the game by displaying the menu"""
+        menu = Menu(self.screen, self.clock)
+        menu.display()
+        self.run()
 
     def run(self):
         """Main game loop"""

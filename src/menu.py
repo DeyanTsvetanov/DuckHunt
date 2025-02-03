@@ -21,8 +21,8 @@ class Menu:
         # Button settings
         button_width, button_height = 300, 60
         button_margin = 20
-        button_color = (70, 130, 180)
-        button_hover_color = (100, 149, 237)
+        button_color = pygame.Color("steelblue")
+        button_hover_color = pygame.Color("dodgerblue")
 
         while self.running:
             self.screen.blit(self.background, (0, 0))
@@ -37,8 +37,8 @@ class Menu:
                             if button["action"]:
                                 button["action"]()
 
-            # Draw buttons
             screen_width = self.screen.get_width()
+            # Draw buttons
             for i, button in enumerate(self.buttons):
                 button_x = (screen_width - button_width) // 2
                 button_y = 150 + i * (button_height + button_margin)
@@ -60,5 +60,4 @@ class Menu:
 
     def start_game(self):
         """Start the game (for now, just print a message)"""
-        print("Starting the game...")
         self.running = False

@@ -2,6 +2,7 @@ import pygame
 from src.duck import Duck
 from src.setup import Setup
 from src.menu import Menu
+from src.game_over import GameOver
 import random
 
 class Gameplay:
@@ -28,7 +29,6 @@ class Gameplay:
         self.shots_remaining = 3
         self.scope = pygame.image.load("assets/scope.png").convert_alpha()
         self.smaller_scope = pygame.transform.scale(self.scope, (40, 40))
-        pygame.mouse.set_visible(False)
 
     def switch_duck_with_delay(self):
         """Switch to a new duck after the specified delay"""
@@ -49,7 +49,7 @@ class Gameplay:
             points = {"special": 100, "normal": 50, "red": -25}
             self.score += points.get(self.current_duck.duck_type)
             if self.score < 0:
-                self.scope = 0
+                self.score = 0
             self.current_duck.respawn()
             self.shots_remaining = 3
             self.switch_duck_with_delay()
@@ -62,24 +62,22 @@ class Gameplay:
                 self.current_duck.make_duck_fly_off()
                 self.shots_remaining = 3
             else:
-                self.game_over_screen()
+                game_over = GameOver(self.screen, self.clock)
+                game_over.display(self.score)
 
-    def game_over_screen(self):
-        """Display a 'Game Over' message on the screen"""
-        game_over_text = self.font.render("GAME OVER", True, (255, 0, 0))
-        text_rect = game_over_text.get_rect(center=(self.setup.screen_width // 2, self.setup.screen_height // 2))
-        self.screen.blit(game_over_text, text_rect)
-        pygame.display.flip()
-        pygame.time.wait(3000)
-
-    def start(self):
-        """Start the game by displaying the menu"""
-        menu = Menu(self.screen, self.clock)
-        menu.display()
-        self.run()
+    def reset_game(self):
+        """Reset the game state to start a new game"""
+        self.lives = 3
+        self.score = 0
+        self.shots_remaining = 3
+        self.current_duck = self.duck[0]
+        self.current_duck.respawn()
+        self.running = True
 
     def run(self):
         """Main game loop"""
+        pygame.mouse.set_visible(False)
+
         while self.running:
             self.screen.blit(self.background, (0, 0))
 
@@ -90,7 +88,6 @@ class Gameplay:
                     self.check_shooting(event.pos)
 
             if self.lives == 0:
-                self.game_over_screen()
                 self.running = False
 
             score_text = self.font.render(f"Score: {self.score}", True, (255, 255, 255))
@@ -101,7 +98,6 @@ class Gameplay:
             self.screen.blit(lives_text, (240, 490))
             self.screen.blit(shots_text, (50, 490))
 
-            # Handle duck respawn and movement
             self.current_duck.handle_respawn()
             if self.current_duck.alive:
                 self.current_duck.move()
@@ -114,4 +110,12 @@ class Gameplay:
             pygame.display.flip()
             self.clock.tick(60)
 
-        pygame.quit()
+    def start(self):
+        """Start the game by displaying the menu and handling transitions"""
+        menu = Menu(self.screen, self.clock)
+        menu.display()
+        self.reset_game()
+        self.run()
+        game_over = GameOver(self.screen, self.clock)
+        game_over.display(self.score)
+        self.start()

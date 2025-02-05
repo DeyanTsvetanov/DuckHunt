@@ -46,7 +46,7 @@ class Gameplay:
             # Delay has passed, switch to a new duck and reset the timer
             self.new_duck_timer_start = None
             self.current_duck = random.choice(self.duck)
-            self.current_duck.respawn()
+            self.current_duck.respawn(mode=self.mode)
 
     def check_shooting(self, mouse_pos):
         """Check if the duck was shot"""
@@ -56,7 +56,7 @@ class Gameplay:
                 self.score += points.get(self.current_duck.duck_type, 0)
                 if self.score < 0:
                     self.score = 0
-                self.current_duck.respawn()
+                self.current_duck.respawn(mode="standard")
                 self.shots_remaining = 3
                 self.switch_duck_with_delay()
             else:
@@ -77,14 +77,14 @@ class Gameplay:
                 self.score += points.get(self.current_duck.duck_type, 0)
                 if self.score < 0:
                     self.score = 0
-                self.current_duck.respawn()
+                self.current_duck.respawn(mode="time")
                 self.switch_duck_with_delay()
 
     def reset_game(self):
         """Reset the game state to start a new game"""
         self.score = 0
         self.current_duck = self.duck[0]
-        self.current_duck.respawn()
+        self.current_duck.respawn(mode=self.mode)
         self.running = True
 
         if self.mode == "standard":

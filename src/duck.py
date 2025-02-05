@@ -61,7 +61,7 @@ class Duck:
         """Moves the duck and ensures it bounces correctly"""
         if self.alive:
             time_on_screen = (pygame.time.get_ticks() - self.spawn_time) / 1000
-            if time_on_screen > 10:
+            if time_on_screen > 5:
                 self.make_duck_fly_off()
 
             self.rect.x += self.speed_x
@@ -110,7 +110,7 @@ class Duck:
         """Draw the duck on the screen"""
         screen.blit(self.image, self.rect)
 
-    def respawn(self, initial_spawn=False):
+    def respawn(self, mode="standard", initial_spawn=False):
         """Respawns the duck at a valid position, either on the first spawn or after a delay."""
         self.waiting_to_respawn = True
         self.respawn_timer_start = pygame.time.get_ticks()
@@ -128,9 +128,10 @@ class Duck:
             self.rect.y = -100
             self.alive = False
 
-        # Increase speed on every respawn
-        self.speed_x *= 1.1
-        self.speed_y *= 1.1
+        # Increase speed
+        if mode == "standard" and not initial_spawn:
+            self.speed_x *= 1.5
+            self.speed_y *= 1.5
 
         # Ensure the duck keeps moving right and up
         self.speed_x = abs(self.speed_x)

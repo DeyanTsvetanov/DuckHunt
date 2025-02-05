@@ -93,6 +93,20 @@ class Gameplay:
         else:
             self.start_time = pygame.time.get_ticks()
 
+    def handle_game_over(self):
+        """Handle game over and save the score."""
+        game_over = GameOver(self.screen, self.clock)
+        game_over.display(self.score)
+
+        # Delegate the name prompt and score saving to the menu
+        menu = Menu(self.screen, self.clock)
+        if self.mode == "standard":
+            menu.save_new_score("standard_results.txt", self.score)
+        else:
+            menu.save_new_score("time_results.txt", self.score)
+
+        self.running = False  # Stop the game
+
     def run(self):
         """Main game loop"""
         pygame.mouse.set_visible(False)
@@ -100,7 +114,7 @@ class Gameplay:
 
         if self.mode == "time":
             self.start_time = pygame.time.get_ticks()
-            self.total_time = 180
+            self.total_time = 60
 
         while self.running:
             self.screen.blit(self.background, (0, 0))
@@ -113,7 +127,7 @@ class Gameplay:
 
             if self.mode == "standard":
                 if self.lives == 0:
-                    self.running = False
+                    self.handle_game_over()
 
                 score_text = self.font.render(f"Score: {self.score}", True, pygame.Color("white"))
                 lives_text = self.font.render(f"Lives: {self.lives}", True, pygame.Color("white"))
@@ -125,9 +139,7 @@ class Gameplay:
             else:
                 elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
                 if self.total_time and elapsed_time >= self.total_time:
-                    game_over = GameOver(self.screen, self.clock)
-                    game_over.display(self.score)
-                    self.running = False
+                    self.handle_game_over()
 
                 score_text = self.font.render(f"Score: {self.score}", True, pygame.Color("white"))
                 elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000

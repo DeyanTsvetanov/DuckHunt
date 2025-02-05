@@ -6,7 +6,7 @@ class GameOver:
         self.screen = screen
         self.clock = clock
         self.font_large = pygame.font.SysFont("Arial", 48)
-        self.font_small = pygame.font.SysFont("Arial", 36)
+        self.font_small = pygame.font.SysFont("Arial", 30)
 
     def display(self, final_score):
         """Display the Game Over screen"""

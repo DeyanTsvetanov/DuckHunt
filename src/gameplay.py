@@ -20,6 +20,7 @@ class Gameplay:
         self.current_duck = self.duck[0]
         self.new_duck_timer_start = None
         self.duck_switch_delay = 2.0
+        self.duck_hits = 0
 
         pygame.font.init()
         self.font = pygame.font.SysFont("Arial Black", 30)
@@ -48,6 +49,11 @@ class Gameplay:
             self.current_duck = random.choice(self.duck)
             self.current_duck.respawn(mode=self.mode)
 
+    def award_milestone_bonus(self):
+        """Award bonus points for reaching a milestone"""
+        milestone_bonus = 100 + (self.duck_hits // 5) * 5
+        self.score += milestone_bonus
+
     def check_shooting(self, mouse_pos):
         """Check if the duck was shot"""
         if self.mode == "standard":
@@ -56,6 +62,11 @@ class Gameplay:
                 self.score += points.get(self.current_duck.duck_type, 0)
                 if self.score < 0:
                     self.score = 0
+
+                self.duck_hits += 1
+                if self.duck_hits % 5 == 0:
+                    self.award_milestone_bonus()
+
                 self.current_duck.respawn(mode="standard")
                 self.shots_remaining = 3
                 self.switch_duck_with_delay()
@@ -77,6 +88,11 @@ class Gameplay:
                 self.score += points.get(self.current_duck.duck_type, 0)
                 if self.score < 0:
                     self.score = 0
+
+                self.duck_hits += 1
+                if self.duck_hits % 5 == 0:
+                    self.award_milestone_bonus()
+
                 self.current_duck.respawn(mode="time")
                 self.switch_duck_with_delay()
 

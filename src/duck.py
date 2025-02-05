@@ -130,8 +130,8 @@ class Duck:
 
         # Increase speed
         if mode == "standard" and not initial_spawn:
-            self.speed_x *= 1.5
-            self.speed_y *= 1.5
+            self.speed_x *= 1.1
+            self.speed_y *= 1.1
 
         # Ensure the duck keeps moving right and up
         self.speed_x = abs(self.speed_x)

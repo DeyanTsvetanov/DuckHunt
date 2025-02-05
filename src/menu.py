@@ -2,16 +2,18 @@ import pygame
 import sys
 
 class Menu:
-    def __init__(self, screen, clock):
+    def __init__(self, screen, clock, background, change_background_func):
         """Initialize the menu with background and buttons"""
         self.screen = screen
         self.clock = clock
         self.running = True
         pygame.mouse.set_visible(True)
-        self.background = pygame.image.load("assets/forest.png").convert()
+        self.background = background
+        self.change_background_func = change_background_func
         self.main_menu_buttons = [
             {"text": "Game Start", "action": self.select_mode},
             {"text": "Top Results", "action": self.show_top_results},
+            {"text": "Change Background", "action": self.change_background_func},
             {"text": "Quit", "action": sys.exit}
         ]
         self.mode_menu_buttons = [
@@ -50,7 +52,10 @@ class Menu:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     for i, button in enumerate(buttons):
                         if self.is_mouse_over_button(mouse_x, mouse_y, i, button_width, button_height, button_margin, top_y):
-                            if button["action"]:
+                            if button["text"] == "Change Background":
+                                self.change_background_func()
+                                self.background = pygame.image.load(self.change_background_func()).convert()
+                            else:
                                 button["action"]()
 
             screen_width = self.screen.get_width()

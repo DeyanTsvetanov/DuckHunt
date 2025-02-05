@@ -11,7 +11,14 @@ class Gameplay:
         self.mode = mode
         self.setup = Setup()
         self.screen = self.setup.get_screen()
-        self.background = self.setup.get_background()
+        self.backgrounds = [
+            "assets/forest.png",
+            "assets/mountain.png",
+            "assets/field.png"
+        ]
+        self.current_background_index = 0
+        self.background = pygame.image.load(self.backgrounds[self.current_background_index]).convert()
+
         self.duck = [
             Duck(self.setup.screen_width, 360, "assets/final_normal_duck.png", "normal"),
             Duck(self.setup.screen_width, 360, "assets/final_red_duck.png", "red"),
@@ -36,6 +43,13 @@ class Gameplay:
         self.scope = pygame.image.load("assets/scope.png").convert_alpha()
         self.smaller_scope = pygame.transform.scale(self.scope, (40, 40))
 
+    def change_background(self):
+        """Cycle through the backgrounds and return the new path."""
+        self.current_background_index = (self.current_background_index + 1) % len(self.backgrounds)
+        new_background_path = self.backgrounds[self.current_background_index]
+        self.background = pygame.image.load(new_background_path).convert()
+        return new_background_path
+    
     def switch_duck_with_delay(self):
         """Switch to a new duck after the specified delay"""
         if self.new_duck_timer_start is None:
@@ -115,7 +129,7 @@ class Gameplay:
         game_over.display(self.score)
 
         # Delegate the name prompt and score saving to the menu
-        menu = Menu(self.screen, self.clock)
+        menu = Menu(self.screen, self.clock, self.change_background)
         if self.mode == "standard":
             menu.save_new_score("standard_results.txt", self.score)
         else:
@@ -179,7 +193,7 @@ class Gameplay:
 
     def start(self):
         """Start the game by displaying the menu and handling transitions"""
-        menu = Menu(self.screen, self.clock)
+        menu = Menu(self.screen, self.clock, self.background, self.change_background)
         menu.display()
         chosen_mode = getattr(menu, "chosen_mode", "standard")
         self.mode = chosen_mode

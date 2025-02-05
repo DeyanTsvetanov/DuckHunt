@@ -1,19 +1,20 @@
 import pygame
 import sys
+from src.music import Music
 
 class Menu:
-    def __init__(self, screen, clock, background, change_background_func):
+    def __init__(self, screen, clock, background, change_background):
         """Initialize the menu with background and buttons"""
         self.screen = screen
         self.clock = clock
         self.running = True
         pygame.mouse.set_visible(True)
         self.background = background
-        self.change_background_func = change_background_func
+        self.change_background = change_background
         self.main_menu_buttons = [
             {"text": "Game Start", "action": self.select_mode},
             {"text": "Top Results", "action": self.show_top_results},
-            {"text": "Change Background", "action": self.change_background_func},
+            {"text": "Change Background", "action": self.change_background},
             {"text": "Quit", "action": sys.exit}
         ]
         self.mode_menu_buttons = [
@@ -22,6 +23,8 @@ class Menu:
         ]
 
         self.current_menu = "main"
+        self.music_manager = Music()
+        self.music_manager.play_music(self.music_manager.title_music)
 
     def display(self):
         """Display the menu screen with buttons and background"""
@@ -53,8 +56,8 @@ class Menu:
                     for i, button in enumerate(buttons):
                         if self.is_mouse_over_button(mouse_x, mouse_y, i, button_width, button_height, button_margin, top_y):
                             if button["text"] == "Change Background":
-                                self.change_background_func()
-                                self.background = pygame.image.load(self.change_background_func()).convert()
+                                self.change_background()
+                                self.background = pygame.image.load(self.change_background()).convert()
                             else:
                                 button["action"]()
 
@@ -82,6 +85,7 @@ class Menu:
     def select_mode(self):
         """Open submenu for game mode selection"""
         self.current_menu = "mode"
+        pygame.mixer.music.stop()
 
     def start_game(self, mode):
         """Close the menu and start the game in the specified mode"""

@@ -3,6 +3,7 @@ from src.duck import Duck
 from src.setup import Setup
 from src.menu import Menu
 from src.game_over import GameOver
+from src.music import Music
 import random
 
 class Gameplay:
@@ -18,7 +19,7 @@ class Gameplay:
         ]
         self.current_background_index = 0
         self.background = pygame.image.load(self.backgrounds[self.current_background_index]).convert()
-
+        self.music_manager = Music()
         self.duck = [
             Duck(self.setup.screen_width, 360, "assets/final_normal_duck.png", "normal"),
             Duck(self.setup.screen_width, 360, "assets/final_red_duck.png", "red"),
@@ -72,6 +73,7 @@ class Gameplay:
         """Check if the duck was shot"""
         if self.mode == "standard":
             if self.current_duck.alive and self.current_duck.rect.collidepoint(mouse_pos):
+                self.music_manager.play_sound(self.music_manager.gunshot_sound)
                 points = {"special": 100, "normal": 50, "red": -25}
                 self.score += points.get(self.current_duck.duck_type, 0)
                 if self.score < 0:
@@ -79,6 +81,7 @@ class Gameplay:
 
                 self.duck_hits += 1
                 if self.duck_hits % 5 == 0:
+                    self.music_manager.play_sound(self.music_manager.combo_sound)
                     self.award_milestone_bonus()
 
                 self.current_duck.respawn(mode="standard")
@@ -93,11 +96,13 @@ class Gameplay:
                     self.current_duck.make_duck_fly_off()
                     self.shots_remaining = 3
                 else:
+                    self.music_manager.play_sound(self.music_manager.game_over_sound)
                     game_over = GameOver(self.screen, self.clock)
                     game_over.display(self.score)
                     self.running = False
         else:
             if self.current_duck.alive and self.current_duck.rect.collidepoint(mouse_pos):
+                self.music_manager.play_sound(self.music_manager.gunshot_sound)
                 points = {"special": 100, "normal": 50, "red": -25}
                 self.score += points.get(self.current_duck.duck_type, 0)
                 if self.score < 0:
@@ -128,14 +133,13 @@ class Gameplay:
         game_over = GameOver(self.screen, self.clock)
         game_over.display(self.score)
 
-        # Delegate the name prompt and score saving to the menu
-        menu = Menu(self.screen, self.clock, self.change_background)
+        menu = Menu(self.screen, self.clock, self.background, self.change_background)
         if self.mode == "standard":
             menu.save_new_score("standard_results.txt", self.score)
         else:
             menu.save_new_score("time_results.txt", self.score)
 
-        self.running = False  # Stop the game
+        self.running = False
 
     def run(self):
         """Main game loop"""

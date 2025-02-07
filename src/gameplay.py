@@ -130,9 +130,12 @@ class Gameplay:
     def reset_game(self):
         """Reset the game state to start a new game"""
         self.score = 0
-        self.current_duck = self.duck[0]
+        self.current_duck = random.choice(self.duck)
         self.current_duck.respawn(mode=self.mode)
         self.running = True
+        self.current_duck.speed_x = 3
+        self.current_duck.speed_y = -3
+        self.duck_hits = 0
 
         if self.mode == "standard":
             self.lives = 3
@@ -160,7 +163,7 @@ class Gameplay:
 
         if self.mode == "time":
             self.start_time = pygame.time.get_ticks()
-            self.total_time = 10
+            self.total_time = 60
 
         while self.running:
             self.screen.blit(self.background, (0, 0))

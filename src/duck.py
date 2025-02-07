@@ -1,6 +1,6 @@
 import pygame
 import random
-from src.music import Music
+from src.animation import Animation
 
 class Duck:
     def __init__(self, screen_width, screen_height, sprite_path, duck_type):
@@ -8,9 +8,10 @@ class Duck:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.sprite_sheet = pygame.image.load(sprite_path).convert_alpha()
-        self.frames = self.load_frames(self.sprite_sheet, frame_width=85, frame_height=90)
-        self.current_frame_index = 0
-        self.image = self.frames[self.current_frame_index]
+
+        # Initialize animation
+        self.animation = Animation(self.sprite_sheet, frame_width=85, frame_height=90)
+        self.image = self.animation.get_current_frame()
         self.rect = self.image.get_rect()
         self.duck_type = duck_type
 
@@ -27,15 +28,11 @@ class Duck:
         self.flying_off_screen = False
 
         self.facing_right = self.speed_x > 0  # Set direction based on speed
+        self.animation.set_direction(self.facing_right)
 
         self.spawn_time = 0  # Track duck's time on the screen
 
         self.respawn(initial_spawn=True)
-        
-        # Animation settings
-        self.animation_timer = 0
-        self.animation_speed = 10
-        self.current_frame = 0
 
         self.waiting_to_respawn = False
         self.respawn_timer_start = None
@@ -51,24 +48,13 @@ class Duck:
         self.shot_time = None  # To track when the duck was shot
         self.is_shot = False  # Indicator if the duck was recently shot
 
-    def load_frames(self, sprite_sheet, frame_width, frame_height):
-        """Extract frames from a sprite sheet"""
-        frames = []
-        sheet_width, sheet_height = sprite_sheet.get_size()
-        
-        for x in range(0, sheet_width, frame_width):
-            if x + frame_width <= sheet_width:
-                frame = sprite_sheet.subsurface((x, 0, frame_width, frame_height))
-                frames.append(frame)
-        return frames
-
     def make_duck_fly_off(self):
         """Make the duck fly off the screen"""
         self.flying_off_screen = True
         self.speed_y = -abs(self.speed_y) # Makes the duck go upwards
 
     def move(self):
-        """Moves the duck and ensures it bounces correctly"""
+        """Moves the duck and ensures it bounces correctly."""
         if self.is_shot:
             # Check if enough time has passed to respawn the duck
             if pygame.time.get_ticks() - self.shot_time > 350:  # 500 ms to display shot image
@@ -85,16 +71,8 @@ class Duck:
             self.rect.y += self.speed_y
 
             # Update animation
-            self.animation_timer += 1
-            if self.animation_timer >= self.animation_speed:
-                self.current_frame_index = (self.current_frame_index + 1) % len(self.frames)
-                self.image = self.frames[self.current_frame_index]
-
-                # Flip the image if facing left
-                if not self.facing_right:
-                    self.image = pygame.transform.flip(self.image, True, False)
-
-                self.animation_timer = 0
+            self.animation.update()
+            self.image = self.animation.get_current_frame()
 
             # Handle flying-off-screen condition
             if self.flying_off_screen:
@@ -113,6 +91,7 @@ class Duck:
             if self.rect.x <= self.x_min or self.rect.x >= self.x_max:
                 self.speed_x = -self.speed_x  # Reverse direction
                 self.facing_right = not self.facing_right  # Flip sprite direction
+                self.animation.set_direction(self.facing_right)
 
             # Bounce off the top boundary
             if self.rect.y >= self.y_max:
@@ -164,12 +143,13 @@ class Duck:
             if elapsed_time >= self.respawn_delay:
                 self.waiting_to_respawn = False
                 self.alive = True
-
+                
                 # Spawn the duck at a random position on the grass level
                 self.rect.x = random.randint(self.x_min, self.x_max)
                 self.rect.y = self.y_max
 
-                # Ensure it starts moving right and upwards
-                self.speed_x = abs(self.speed_x)  # Start moving right
-                self.speed_y = -abs(self.speed_y)  # Start moving upwards
-                self.facing_right = True
+                self.speed_x = abs(self.speed_x)  # Ensure it starts moving right
+                self.facing_right = True  # Set facing direction to right before animation update
+                self.animation.set_direction(self.facing_right)  # Update animation direction
+                self.speed_y = -abs(self.speed_y)  # Ensure it starts moving upwards
+                

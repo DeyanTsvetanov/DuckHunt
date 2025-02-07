@@ -112,6 +112,7 @@ class Menu:
 
     def prompt_for_name(self):
         """Display a window for the player to enter their name."""
+        self.music_manager.stop_music()
         font = pygame.font.SysFont("Arial", 36)
         input_active = True
         player_name = ""
@@ -151,6 +152,9 @@ class Menu:
 
             pygame.display.flip()
             self.clock.tick(60)
+            
+        self.current_menu = "main"
+        self.display()
 
         return player_name
 

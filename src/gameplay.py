@@ -92,6 +92,7 @@ class Gameplay:
 
                 self.current_duck.is_shot = True
                 self.current_duck.shot_time = pygame.time.get_ticks()
+                self.shots_remaining = 3
                 
             else:
                 self.shots_remaining -= 1
@@ -159,7 +160,7 @@ class Gameplay:
 
         if self.mode == "time":
             self.start_time = pygame.time.get_ticks()
-            self.total_time = 60
+            self.total_time = 10
 
         while self.running:
             self.screen.blit(self.background, (0, 0))

@@ -8,8 +8,6 @@ class Setup:
 
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption("Duck Hunt")
-        
-        self.background = pygame.image.load("assets/forest.png").convert()
 
     def get_screen(self):
         """Return the Pygame screen surface"""

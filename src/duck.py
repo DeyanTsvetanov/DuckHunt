@@ -152,4 +152,3 @@ class Duck:
                 self.facing_right = True  # Set facing direction to right before animation update
                 self.animation.set_direction(self.facing_right)  # Update animation direction
                 self.speed_y = -abs(self.speed_y)  # Ensure it starts moving upwards
-                

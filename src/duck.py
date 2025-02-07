@@ -1,5 +1,6 @@
 import pygame
 import random
+from src.music import Music
 
 class Duck:
     def __init__(self, screen_width, screen_height, sprite_path, duck_type):
@@ -41,6 +42,15 @@ class Duck:
         self.respawn_delay = 1.0
         self.alive = True
 
+        if self.duck_type == "normal":
+            self.shot_image = pygame.image.load("assets/normal_duck_shot.png").convert_alpha()
+        elif self.duck_type == "red":
+            self.shot_image = pygame.image.load("assets/red_duck_shot.png").convert_alpha()
+        elif self.duck_type == "special":
+            self.shot_image = pygame.image.load("assets/special_duck_shot.png").convert_alpha()
+        self.shot_time = None  # To track when the duck was shot
+        self.is_shot = False  # Indicator if the duck was recently shot
+
     def load_frames(self, sprite_sheet, frame_width, frame_height):
         """Extract frames from a sprite sheet"""
         frames = []
@@ -59,6 +69,13 @@ class Duck:
 
     def move(self):
         """Moves the duck and ensures it bounces correctly"""
+        if self.is_shot:
+            # Check if enough time has passed to respawn the duck
+            if pygame.time.get_ticks() - self.shot_time > 350:  # 500 ms to display shot image
+                self.is_shot = False
+                self.respawn()
+            return
+ 
         if self.alive:
             time_on_screen = (pygame.time.get_ticks() - self.spawn_time) / 1000
             if time_on_screen > 5:

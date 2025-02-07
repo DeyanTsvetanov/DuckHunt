@@ -71,6 +71,7 @@ class Gameplay:
 
     def check_shooting(self, mouse_pos):
         """Check if the duck was shot"""
+        print(f"Mode: {self.mode}, Speed X: {self.current_duck.speed_x}, Speed Y: {self.current_duck.speed_y}")
         if self.mode == "standard":
             if self.current_duck.alive and self.current_duck.rect.collidepoint(mouse_pos):
                 self.music_manager.play_sound(self.music_manager.gunshot_sound)
@@ -84,9 +85,14 @@ class Gameplay:
                     self.music_manager.play_sound(self.music_manager.combo_sound)
                     self.award_milestone_bonus()
 
-                self.current_duck.respawn(mode="standard")
-                self.shots_remaining = 3
-                self.switch_duck_with_delay()
+                if not self.current_duck.facing_right:
+                    self.current_duck.image = pygame.transform.flip(self.current_duck.shot_image, True, False)
+                else:
+                    self.current_duck.image = self.current_duck.shot_image
+
+                self.current_duck.is_shot = True
+                self.current_duck.shot_time = pygame.time.get_ticks()
+                
             else:
                 self.shots_remaining -= 1
 
@@ -112,8 +118,13 @@ class Gameplay:
                 if self.duck_hits % 5 == 0:
                     self.award_milestone_bonus()
 
-                self.current_duck.respawn(mode="time")
-                self.switch_duck_with_delay()
+                if not self.current_duck.facing_right:
+                    self.current_duck.image = pygame.transform.flip(self.current_duck.shot_image, True, False)
+                else:
+                    self.current_duck.image = self.current_duck.shot_image
+
+                self.current_duck.is_shot = True
+                self.current_duck.shot_time = pygame.time.get_ticks()
 
     def reset_game(self):
         """Reset the game state to start a new game"""
@@ -201,6 +212,7 @@ class Gameplay:
         menu.display()
         chosen_mode = getattr(menu, "chosen_mode", "standard")
         self.mode = chosen_mode
+        print(f"Chosen mode: {self.mode}")
         self.run()
         game_over = GameOver(self.screen, self.clock)
         game_over.display(self.score)

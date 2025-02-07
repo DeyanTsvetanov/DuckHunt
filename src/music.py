@@ -11,7 +11,7 @@ class Music:
         self.gunshot_sound = pygame.mixer.Sound("assets/gunshot.mp3")
 
         self.combo_sound.set_volume(0.7)
-        self.duck_flapping_sound.set_volume(0.5)
+        self.duck_flapping_sound.set_volume(0.7)
         self.gunshot_sound.set_volume(0.8)
 
     def play_music(self, music_file, loop=True):

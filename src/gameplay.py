@@ -154,6 +154,9 @@ class Gameplay:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.check_shooting(event.pos)
 
+            if not self.current_duck.alive:
+                self.switch_duck_with_delay()
+
             if self.mode == "standard":
                 if self.lives == 0:
                     self.handle_game_over()

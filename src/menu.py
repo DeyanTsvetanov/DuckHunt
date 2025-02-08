@@ -73,7 +73,6 @@ class Menu:
         Open submenu for game mode selection
         """
         self.current_menu = "mode"
-        pygame.mixer.music.stop()
 
     def start_game(self, mode):
         """

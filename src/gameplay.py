@@ -220,5 +220,6 @@ class Gameplay:
             self.background = menu.background
             self.mode = getattr(menu, "chosen_mode", "standard")
             print(f"Chosen mode: {self.mode}")
+            pygame.mixer.music.stop()
             self.run()
             self.reset_game()

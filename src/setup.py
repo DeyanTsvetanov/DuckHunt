@@ -4,7 +4,9 @@ from src.music import Music
 
 class Setup:
     def __init__(self):
-        """Initialize Pygame, create the window, and load assets"""
+        """
+        Initialize Pygame, create the window, and load assets.
+        """
         self.screen_width = 800
         self.screen_height = 600
 
@@ -35,32 +37,46 @@ class Setup:
         ]
 
     def get_screen(self):
-        """Return the Pygame screen surface"""
+        """
+        Return the Pygame screen surface.
+        """
         return self.screen
 
     def get_background(self):
-        """Return the loaded background image"""
+        """
+        Return the loaded background image.
+        """
         return self.background
 
     def change_background(self):
-        """Cycle through the backgrounds and return the new path."""
+        """
+        Cycle through the backgrounds and return the new path.
+        """
         self.current_background_index = (self.current_background_index + 1) % len(self.backgrounds)
         new_background_path = self.backgrounds[self.current_background_index]
         self.background = pygame.image.load(new_background_path).convert()
         return new_background_path
 
     def get_font(self):
-        """Return the font object"""
+        """
+        Return the font object.
+        """
         return self.font
 
     def get_scope(self):
-        """Return the scope image"""
+        """
+        Return the scope image.
+        """
         return self.smaller_scope
 
     def get_music_manager(self):
-        """Return the music manager"""
+        """
+        Return the music manager.
+        """
         return self.music_manager
 
     def get_ducks(self):
-        """Return the list of duck objects"""
+        """
+        Return the list of duck objects.
+        """
         return self.ducks

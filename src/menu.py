@@ -6,7 +6,7 @@ from src.button import Button
 class Menu:
     def __init__(self, screen, clock, background, change_background):
         """
-        Initialize the menu with background and buttons
+        Initialize the menu with background and buttons.
         """
         self.screen = screen
         self.clock = clock
@@ -34,7 +34,7 @@ class Menu:
 
     def display(self):
         """
-        Display the menu screen with buttons and background
+        Display the menu screen with buttons and background.
         """
         while self.running:
             self.screen.blit(self.background, (0, 0))
@@ -70,13 +70,13 @@ class Menu:
 
     def select_mode(self):
         """
-        Open submenu for game mode selection
+        Open submenu for game mode selection.
         """
         self.current_menu = "mode"
 
     def start_game(self, mode):
         """
-        Close the menu and start the game in the specified mode
+        Close the menu and start the game in the specified mode.
         """
         self.running = False
         self.chosen_mode = mode

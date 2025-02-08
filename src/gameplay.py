@@ -8,7 +8,7 @@ from src.game_ui import UI
 class Gameplay:
     def __init__(self, mode="standard"):
         """
-        Initialize the game, load assets, and create objects
+        Initialize the game, load assets, and create objects.
         """
         self.mode = mode
         self.setup = Setup()
@@ -25,6 +25,7 @@ class Gameplay:
         self.score = 0
         self.clock = pygame.time.Clock()
         self.running = True
+        self.game_over_flag = False
 
         self.total_time = None
         self.lives = 3 if mode == "standard" else None
@@ -36,7 +37,7 @@ class Gameplay:
 
     def switch_duck_with_delay(self):
         """
-        Switch to a new duck after the specified delay
+        Switch to a new duck after the specified delay.
         """
         if self.new_duck_timer_start is None:
             # Start the timer when switching is triggered
@@ -51,7 +52,7 @@ class Gameplay:
 
     def award_milestone_bonus(self):
         """
-        Award bonus points for reaching a milestone
+        Award bonus points for reaching a milestone.
         """
         milestone_bonus = 100 + (self.duck_hits // 5) * 5
         self.score += milestone_bonus
@@ -107,12 +108,13 @@ class Gameplay:
 
     def reset_game(self):
         """
-        Reset the game state to start a new game
+        Reset the game state to start a new game.
         """
         self.score = 0
         self.current_duck = random.choice(self.ducks)
         self.current_duck.respawn(mode=self.mode)
         self.running = True
+        self.game_over_flag = False
         self.current_duck.speed_x = 3
         self.current_duck.speed_y = -3
         self.duck_hits = 0
@@ -125,7 +127,7 @@ class Gameplay:
 
     def handle_game_over(self):
         """
-        Delegate the game over flow to the GameOver module.
+        Execute the game-over sequence.
         """
         game_over = GameOver(self.screen, self.clock)
         player_name = game_over.display(self.score)
@@ -137,7 +139,7 @@ class Gameplay:
             else:
                 game_over.save_new_score("time_results.txt", self.score, player_name)
         else:
-            print("No valid name entered; score not saved.")
+            print("No valid name entered! Score wasn't saved.")
 
         pygame.time.delay(500)
         pygame.event.clear()
@@ -147,7 +149,7 @@ class Gameplay:
 
     def process_events(self):
         """
-        Process user input events.
+        Process user input.
         """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -157,17 +159,19 @@ class Gameplay:
 
     def update(self):
         """
-        Update game logic.
+        Update game logic for duck status and game over conditions.
         """
         if not self.current_duck.alive:
             self.switch_duck_with_delay()
 
         if self.mode == "standard":
-            if self.lives == 0:
+            if self.lives == 0 and not self.game_over_flag:
+                self.game_over_flag = True
                 self.handle_game_over()
         else:
             elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
-            if self.total_time and elapsed_time >= self.total_time:
+            if self.total_time and elapsed_time >= self.total_time and not self.game_over_flag:
+                self.game_over_flag = True
                 self.handle_game_over()
 
         self.current_duck.handle_respawn()

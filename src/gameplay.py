@@ -131,10 +131,13 @@ class Gameplay:
         player_name = game_over.display(self.score)
         print(f"Returned from game over; player name: {player_name}")
         
-        if self.mode == "standard":
-            game_over.save_new_score("standard_results.txt", self.score, player_name)
+        if player_name.strip() != "":
+            if self.mode == "standard":
+                game_over.save_new_score("standard_results.txt", self.score, player_name)
+            else:
+                game_over.save_new_score("time_results.txt", self.score, player_name)
         else:
-            game_over.save_new_score("time_results.txt", self.score, player_name)
+            print("No valid name entered; score not saved.")
 
         pygame.time.delay(500)
         pygame.event.clear()

@@ -1,7 +1,9 @@
 import pygame
 import random
+import os
 from src.animation import Animation
 
+ASSETS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets")
 # Constants:
 FLYING_WINDOW_WIDTH = 800         # Width of the flying window
 FLYING_WINDOW_HEIGHT = 360        # Height of the flying window
@@ -48,11 +50,14 @@ class Duck:
         self.alive = True
 
         if self.duck_type == "normal":
-            self.shot_image = pygame.image.load("assets/normal_duck_shot.png").convert_alpha()
+            shot_path = os.path.join(ASSETS_DIR, "normal_duck_shot.png")
+            self.shot_image = pygame.image.load(shot_path).convert_alpha()
         elif self.duck_type == "red":
-            self.shot_image = pygame.image.load("assets/red_duck_shot.png").convert_alpha()
+            shot_path = os.path.join(ASSETS_DIR, "red_duck_shot.png")
+            self.shot_image = pygame.image.load(shot_path).convert_alpha()
         elif self.duck_type == "special":
-            self.shot_image = pygame.image.load("assets/special_duck_shot.png").convert_alpha()
+            shot_path = os.path.join(ASSETS_DIR, "special_duck_shot.png")
+            self.shot_image = pygame.image.load(shot_path).convert_alpha()
         
         self.shot_time = None  # To track when the duck was shot
         self.is_shot = False  # Indicator if the duck was recently shot
@@ -168,6 +173,6 @@ class Duck:
                 self.rect.y = self.y_max
 
                 self.speed_x = abs(self.speed_x)  # Ensure it starts moving right
-                self.facing_right = True  # Set facing direction to right before animation update
+                self.facing_right = True # Ensure it's facing right
                 self.animation.set_direction(self.facing_right)  # Update animation direction
                 self.speed_y = -abs(self.speed_y)  # Ensure it starts moving upwards

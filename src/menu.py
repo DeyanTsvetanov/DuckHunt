@@ -45,8 +45,8 @@ class Menu:
                     for button in buttons:
                         if button.is_clicked(event):
                             if button.text == "Change Background":
-                                self.change_background()
-                                self.background = pygame.image.load(self.change_background()).convert()
+                                new_background_path = self.change_background()
+                                self.background = pygame.image.load(new_background_path).convert()
                             elif button.text == "Quit":
                                 sys.exit()
                             elif button.text == "Game Start":

@@ -12,26 +12,15 @@ class Gameplay:
         self.mode = mode
         self.setup = Setup()
         self.screen = self.setup.get_screen()
-        self.backgrounds = [
-            "assets/forest.png",
-            "assets/mountain.png",
-            "assets/field.png"
-        ]
-        self.current_background_index = 0
-        self.background = pygame.image.load(self.backgrounds[self.current_background_index]).convert()
-        self.music_manager = Music()
-        self.duck = [
-            Duck(self.setup.screen_width, 360, "assets/final_normal_duck.png", "normal"),
-            Duck(self.setup.screen_width, 360, "assets/final_red_duck.png", "red"),
-            Duck(self.setup.screen_width, 360, "assets/final_special_duck.png", "special")
-        ]
-        self.current_duck = self.duck[0]
+        self.background = self.setup.get_background()
+        self.music_manager = self.setup.get_music_manager()
+        self.ducks = self.setup.get_ducks()
+        self.current_duck = self.ducks[0]
         self.new_duck_timer_start = None
         self.duck_switch_delay = 2.0
         self.duck_hits = 0
 
-        pygame.font.init()
-        self.font = pygame.font.SysFont("Arial Black", 30)
+        self.font = self.setup.get_font()
         self.score = 0
         self.clock = pygame.time.Clock()
         self.running = True
@@ -41,16 +30,8 @@ class Gameplay:
         self.shots_remaining = 3 if mode == "standard" else None
         self.start_time = None
 
-        self.scope = pygame.image.load("assets/scope.png").convert_alpha()
-        self.smaller_scope = pygame.transform.scale(self.scope, (40, 40))
+        self.smaller_scope = self.setup.get_scope()
 
-    def change_background(self):
-        """Cycle through the backgrounds and return the new path."""
-        self.current_background_index = (self.current_background_index + 1) % len(self.backgrounds)
-        new_background_path = self.backgrounds[self.current_background_index]
-        self.background = pygame.image.load(new_background_path).convert()
-        return new_background_path
-    
     def switch_duck_with_delay(self):
         """Switch to a new duck after the specified delay"""
         if self.new_duck_timer_start is None:
@@ -61,7 +42,7 @@ class Gameplay:
         if elapsed_time >= self.duck_switch_delay:
             # Delay has passed, switch to a new duck and reset the timer
             self.new_duck_timer_start = None
-            self.current_duck = random.choice(self.duck)
+            self.current_duck = random.choice(self.ducks)
             self.current_duck.respawn(mode=self.mode)
 
     def award_milestone_bonus(self):
@@ -71,7 +52,6 @@ class Gameplay:
 
     def check_shooting(self, mouse_pos):
         """Check if the duck was shot"""
-        print(f"Mode: {self.mode}, Speed X: {self.current_duck.speed_x}, Speed Y: {self.current_duck.speed_y}")
         if self.mode == "standard":
             if self.current_duck.alive and self.current_duck.rect.collidepoint(mouse_pos):
                 self.music_manager.play_sound(self.music_manager.gunshot_sound)
@@ -93,7 +73,7 @@ class Gameplay:
                 self.current_duck.is_shot = True
                 self.current_duck.shot_time = pygame.time.get_ticks()
                 self.shots_remaining = 3
-                
+
             else:
                 self.shots_remaining -= 1
 
@@ -130,7 +110,7 @@ class Gameplay:
     def reset_game(self):
         """Reset the game state to start a new game"""
         self.score = 0
-        self.current_duck = random.choice(self.duck)
+        self.current_duck = random.choice(self.ducks)
         self.current_duck.respawn(mode=self.mode)
         self.running = True
         self.current_duck.speed_x = 3
@@ -148,7 +128,7 @@ class Gameplay:
         game_over = GameOver(self.screen, self.clock)
         game_over.display(self.score)
 
-        menu = Menu(self.screen, self.clock, self.background, self.change_background)
+        menu = Menu(self.screen, self.clock, self.background, self.setup.change_background)
         if self.mode == "standard":
             menu.save_new_score("standard_results.txt", self.score)
         else:
@@ -181,7 +161,7 @@ class Gameplay:
                 score_text = self.font.render(f"Score: {self.score}", True, pygame.Color("white"))
                 lives_text = self.font.render(f"Lives: {self.lives}", True, pygame.Color("white"))
                 shots_text = self.font.render(f"Shots: {self.shots_remaining}", True, pygame.Color("white"))
-                
+
                 self.screen.blit(score_text, (500, 490))
                 self.screen.blit(lives_text, (240, 490))
                 self.screen.blit(shots_text, (50, 490))
@@ -195,7 +175,7 @@ class Gameplay:
                 remaining_time = max(int(self.total_time - elapsed_time), 0)
                 time_text = self.font.render(f"Time: {remaining_time}", True, pygame.Color("white"))
 
-                self.screen.blit(score_text, (50,490))
+                self.screen.blit(score_text, (50, 490))
                 self.screen.blit(time_text, (500, 490))
 
             self.current_duck.handle_respawn()
@@ -212,7 +192,7 @@ class Gameplay:
 
     def start(self):
         """Start the game by displaying the menu and handling transitions"""
-        menu = Menu(self.screen, self.clock, self.background, self.change_background)
+        menu = Menu(self.screen, self.clock, self.background, self.setup.change_background)
         menu.display()
         chosen_mode = getattr(menu, "chosen_mode", "standard")
         self.mode = chosen_mode

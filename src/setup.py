@@ -1,8 +1,17 @@
+"""
+This module initializes the game environment for the DuckHunt game.
+"""
 import pygame
 from src.duck import Duck
 from src.music import Music
 
 class Setup:
+    """
+    This class creates the main display window, loads and cycles through background images,
+    initializes fonts and scope images, and instantiates game objects like ducks and
+    the music manager. The class provides several getter methods to retrieve these assets
+    for use by other parts of the game.
+"""
     def __init__(self) -> None:
         """
         Initialize Pygame, create the window, and load assets.

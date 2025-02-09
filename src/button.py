@@ -1,7 +1,16 @@
+"""
+This module defines the Button class used in the DuckHunt game for handling UI button design.
+"""
 import pygame
+from pygame.locals import MOUSEBUTTONDOWN
 
 class Button:
-    def __init__(self, text: str, x: int, y: int, width: int, height: int, 
+    """
+    A UI button design for the DuckHunt game.
+    This class supports rendering a button with text, handling hover effects,
+    and detecting click events.
+    """
+    def __init__(self, text: str, x: int, y: int, width: int, height: int,
                  font: pygame.font.Font, color: pygame.Color, hover_color: pygame.Color) -> None:
         """
         Initialize a button with text, position, dimensions, and colors.
@@ -26,4 +35,4 @@ class Button:
         """
         Check if the button has been clicked.
         """
-        return event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(pygame.mouse.get_pos())
+        return event.type == MOUSEBUTTONDOWN and self.rect.collidepoint(pygame.mouse.get_pos())

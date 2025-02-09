@@ -1,11 +1,20 @@
-import pygame
+"""
+This module implements the menu system.
+"""
 import sys
+from collections.abc import Callable
+import pygame
 from src.music import Music
 from src.button import Button
-from collections.abc import Callable
+
 
 class Menu:
-    def __init__(self, screen: pygame.Surface, clock: pygame.time.Clock, 
+    """
+    This class manages the main menu and the mode selection submenu. It displays buttons for 
+    starting the game, showing top results, changing the background, and quitting. It 
+    also plays the title music.
+    """
+    def __init__(self, screen: pygame.Surface, clock: pygame.time.Clock,
                  background: pygame.Surface, change_background: Callable[[], str]) -> None:
         """
         Initialize the menu with background and buttons.
@@ -19,15 +28,33 @@ class Menu:
 
         # Initialize buttons
         self.main_menu_buttons = [
-            Button("Game Start", 250, 150, 300, 60, pygame.font.SysFont("Arial", 30), pygame.Color("steelblue"), pygame.Color("dodgerblue")),
-            Button("Top Results", 250, 230, 300, 60, pygame.font.SysFont("Arial", 30), pygame.Color("steelblue"), pygame.Color("dodgerblue")),
-            Button("Change Background", 250, 310, 300, 60, pygame.font.SysFont("Arial", 30), pygame.Color("steelblue"), pygame.Color("dodgerblue")),
-            Button("Quit", 250, 390, 300, 60, pygame.font.SysFont("Arial", 30), pygame.Color("steelblue"), pygame.Color("dodgerblue"))
+            Button(
+                "Game Start", 250, 150, 300, 60, pygame.font.SysFont("Arial", 30), 
+                pygame.Color("steelblue"), pygame.Color("dodgerblue")
+            ),
+            Button(
+                "Top Results", 250, 230, 300, 60, pygame.font.SysFont("Arial", 30), 
+                pygame.Color("steelblue"), pygame.Color("dodgerblue")
+            ),
+            Button(
+                "Change Background", 250, 310, 300, 60, pygame.font.SysFont("Arial", 30), 
+                pygame.Color("steelblue"), pygame.Color("dodgerblue")
+            ),
+            Button(
+                "Quit", 250, 390, 300, 60, pygame.font.SysFont("Arial", 30), 
+                pygame.Color("steelblue"), pygame.Color("dodgerblue")
+            )
         ]
 
         self.mode_menu_buttons = [
-            Button("Standard Mode", 250, 150, 300, 60, pygame.font.SysFont("Arial", 30), pygame.Color("steelblue"), pygame.Color("dodgerblue")),
-            Button("Time Mode", 250, 230, 300, 60, pygame.font.SysFont("Arial", 30), pygame.Color("steelblue"), pygame.Color("dodgerblue"))
+            Button(
+                "Standard Mode", 250, 150, 300, 60, pygame.font.SysFont("Arial", 30), 
+                pygame.Color("steelblue"), pygame.Color("dodgerblue")
+            ),
+            Button(
+                "Time Mode", 250, 230, 300, 60, pygame.font.SysFont("Arial", 30), 
+                pygame.Color("steelblue"), pygame.Color("dodgerblue")
+            )
         ]
 
         self.current_menu = "main"
@@ -88,7 +115,7 @@ class Menu:
         Load results from a file, returning a list of (name, score) tuples.
         """
         try:
-            with open(filename, "r") as file:
+            with open(filename, "r", encoding="utf-8") as file:
                 return [(name, int(score)) for name, score in (line.strip().split(",") for line in file.readlines())]
         except FileNotFoundError:
             return []
@@ -105,24 +132,45 @@ class Menu:
         time_results = self.load_results("time_results.txt")
 
         # Create the return button
-        return_button = Button("Return to Main Menu", self.screen.get_width() // 2 - 150, self.screen.get_height() - 100, 300, 60, font, pygame.Color("steelblue"), pygame.Color("dodgerblue"))
+        return_button = Button(
+            "Return to Main Menu",
+            self.screen.get_width() // 2 - 150,
+            self.screen.get_height() - 100,
+            300,
+            60,
+            font,
+            pygame.Color("steelblue"),
+            pygame.Color("dodgerblue")
+        )
 
         while results_running:
             self.screen.fill(pygame.Color("black"))
 
             # Display headers
-            self.screen.blit(font.render("Standard Mode", True, pygame.Color("white")), (50, 100))
-            self.screen.blit(font.render("Time Mode", True, pygame.Color("white")), (self.screen.get_width() // 2 + 20, 100))
+            self.screen.blit(
+                font.render("Standard Mode", True, pygame.Color("white")),
+                (50, 100)
+            )
+            self.screen.blit(
+                font.render("Time Mode", True, pygame.Color("white")),
+                (self.screen.get_width() // 2 + 20, 100)
+            )
 
             # Display results for both modes
             y_offset = 140
             for i in range(max(len(standard_results), len(time_results))):
                 if i < len(standard_results):
                     name, score = standard_results[i]
-                    self.screen.blit(font.render(f"{name}: {score}", True, pygame.Color("white")), (50, y_offset))
+                    self.screen.blit(
+                        font.render(f"{name}: {score}", True, pygame.Color("white")),
+                        (50, y_offset)
+                    )
                 if i < len(time_results):
                     name, score = time_results[i]
-                    self.screen.blit(font.render(f"{name}: {score}", True, pygame.Color("white")), (self.screen.get_width() // 2 + 20, y_offset))
+                    self.screen.blit(
+                        font.render(f"{name}: {score}", True, pygame.Color("white")),
+                        (self.screen.get_width() // 2 + 20, y_offset)
+                    )
                 y_offset += 30
 
             # Handle events and button interactions

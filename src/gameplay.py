@@ -1,11 +1,20 @@
-import pygame
+"""
+This module implements the main game logic.
+"""
 import random
+import pygame
 from src.setup import Setup
 from src.menu import Menu
 from src.game_over import GameOver
 from src.game_ui import UI
 
 class Gameplay:
+    """
+    This class is responsible for initializing the game environment,
+    managing game states, processing user input, updating game objects
+    (such as ducks), and rendering the game UI. It supports both standard
+    and time-based game modes.
+    """
     def __init__(self, mode: str = "standard") -> None:
         """
         Initialize the game, load assets, and create objects.
@@ -27,15 +36,15 @@ class Gameplay:
         self.running = True
         self.game_over_flag = False
 
-        self.total_time: float | None = None
-        self.lives: int | None = 3 if mode == "standard" else None
-        self.shots_remaining: int | None = 3 if mode == "standard" else None
+        self.total_time: int | None = None
+        self.lives = 3 if mode == "standard" else None
+        self.shots_remaining = 3 if mode == "standard" else None
         self.start_time: int | None = None
 
         self.smaller_scope = self.setup.get_scope()
         self.ui_manager = UI(self.screen, self.font)
 
-    def switch_duck_with_delay(self):
+    def switch_duck_with_delay(self) -> None:
         """
         Switch to a new duck after the specified delay.
         """
@@ -64,8 +73,7 @@ class Gameplay:
         self.music_manager.play_sound(self.music_manager.gunshot_sound)
         points = {"special": 100, "normal": 50, "red": -25}
         self.score += points.get(self.current_duck.duck_type, 0)
-        if self.score < 0:
-            self.score = 0
+        self.score = max(self.score, 0)
 
         self.duck_hits += 1
         if self.duck_hits % 5 == 0:
@@ -75,15 +83,16 @@ class Gameplay:
 
         # Set the appropriate shot image depending on duck direction.
         if not self.current_duck.facing_right:
-            self.current_duck.image = pygame.transform.flip(self.current_duck.shot_image, True, False)
+            self.current_duck.image = pygame.transform.flip(
+                self.current_duck.shot_image, True, False
+            )
         else:
             self.current_duck.image = self.current_duck.shot_image
 
         self.current_duck.is_shot = True
         self.current_duck.shot_time = pygame.time.get_ticks()
 
-
-    def check_shooting(self, mouse_pos: tuple[int, int]) -> None:
+    def check_shooting(self, mouse_pos: tuple) -> None:
         """
         Check if the duck was shot and update game state accordingly.
         """
@@ -95,15 +104,16 @@ class Gameplay:
                 self.shots_remaining = 3
             else:
                 self.process_hit()
-        elif self.mode == "standard" and self.shots_remaining is not None:
+        elif self.mode == "standard":
+            assert self.shots_remaining is not None
             self.shots_remaining -= 1
-            if self.shots_remaining == 0 and self.lives is not None:
+            if self.shots_remaining == 0:
+                assert self.lives is not None
                 self.lives -= 1
                 if self.lives > 0:
                     self.current_duck.make_duck_fly_off()
                     self.shots_remaining = 3
                 else:
-                    self.music_manager.play_sound(self.music_manager.game_over_sound)
                     self.running = False
 
     def reset_game(self) -> None:
@@ -115,8 +125,8 @@ class Gameplay:
         self.current_duck.respawn(mode=self.mode)
         self.running = True
         self.game_over_flag = False
-        self.current_duck.speed_x = 3.0
-        self.current_duck.speed_y = -3.0
+        self.current_duck.speed_x = 3
+        self.current_duck.speed_y = -3
         self.duck_hits = 0
 
         if self.mode == "standard":
@@ -129,10 +139,10 @@ class Gameplay:
         """
         Execute the game-over sequence.
         """
+        self.music_manager.play_sound(self.music_manager.game_over_sound)
         game_over = GameOver(self.screen, self.clock)
         player_name = game_over.display(self.score)
         print(f"Returned from game over; player name: {player_name}")
-        
         if player_name.strip() != "":
             if self.mode == "standard":
                 game_over.save_new_score("standard_results.txt", self.score, player_name)
@@ -140,10 +150,8 @@ class Gameplay:
                 game_over.save_new_score("time_results.txt", self.score, player_name)
         else:
             print("No valid name entered! Score wasn't saved.")
-
         pygame.time.delay(500)
         pygame.event.clear()
-        
         self.running = False
         print("Exiting handle_game_over(), game loop stopped.")
 
@@ -214,7 +222,6 @@ class Gameplay:
 
         if self.mode == "time":
             self.start_time = pygame.time.get_ticks()
-            assert self.total_time is not None
             self.total_time = 60
 
         while self.running:

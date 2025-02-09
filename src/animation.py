@@ -1,7 +1,16 @@
+"""
+This module provides an Animation class for handling sprite sheet animations in the DuckHunt game.
+"""
 import pygame
 
 class Animation:
-    def __init__(self, sprite_sheet: pygame.Surface, frame_width: int, frame_height: int, animation_speed: int = 10) -> None:
+    """
+    This class handles the extraction and updating of frames from a sprite sheet.
+    It loads the frames, updates the current frame based on a timer, and allows flipping
+    the image based on the direction.
+    """
+    def __init__(self, sprite_sheet: pygame.Surface, frame_width: int,
+                 frame_height: int, animation_speed: int = 10) -> None:
         """
         Initialize the animation with a sprite sheet and frame dimensions.
         """
@@ -12,13 +21,14 @@ class Animation:
         self.animation_speed = animation_speed
         self.facing_right = True  # Default direction
 
-    def load_frames(self, sprite_sheet: pygame.Surface, frame_width: int, frame_height: int) -> list[pygame.Surface]:
+    def load_frames(self, sprite_sheet: pygame.Surface,
+                    frame_width: int, frame_height: int) -> list[pygame.Surface]:
         """
         Extract frames from a sprite sheet.
         """
         frames = []
-        sheet_width, sheet_height = sprite_sheet.get_size()
-        
+        sheet_width, _ = sprite_sheet.get_size()
+
         for x in range(0, sheet_width, frame_width):
             if x + frame_width <= sheet_width:
                 frame = sprite_sheet.subsurface((x, 0, frame_width, frame_height))
@@ -33,11 +43,9 @@ class Animation:
         if self.animation_timer >= self.animation_speed:
             self.current_frame_index = (self.current_frame_index + 1) % len(self.frames)
             self.image = self.frames[self.current_frame_index]
-            
             # Flip the image if facing left
             if not self.facing_right:
                 self.image = pygame.transform.flip(self.image, True, False)
-            
             self.animation_timer = 0
 
     def set_direction(self, facing_right: bool) -> None:

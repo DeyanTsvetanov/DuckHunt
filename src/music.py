@@ -1,9 +1,16 @@
+"""
+This module implements a music manager.
+"""
 import pygame
 
 class Music:
+    """
+    It initializes the mixer, loads various sound assets (title music, combo sound, duck flapping,
+    game over, and gunshot sounds), and provides methods to play or stop these sounds.
+    """
     def __init__(self) -> None:
         """
-        Initialize the Music manager.
+        Initialize the music manager.
         """
         pygame.mixer.init()
         self.title_music = "assets/new_title_screen.mp3"

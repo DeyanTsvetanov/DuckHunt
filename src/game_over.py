@@ -2,7 +2,7 @@ import pygame
 from src.button import Button
 
 class GameOver:
-    def __init__(self, screen, clock):
+    def __init__(self, screen: pygame.Surface, clock: pygame.time.Clock) -> None:
         """
         Initialize the Game Over screen.
         """
@@ -11,7 +11,7 @@ class GameOver:
         self.font_large = pygame.font.SysFont("Arial", 48)
         self.font_small = pygame.font.SysFont("Arial", 30)
 
-    def display(self, final_score):
+    def display(self, final_score: int) -> str:
         """
         Display the Game Over screen with the final score and a "Back to Menu" button. 
         When the button is clicked, prompt for the player's name.
@@ -42,7 +42,6 @@ class GameOver:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                    return ""  # Return empty name if quitting
                 if back_to_menu_button.is_clicked(event):
                     running = False
 
@@ -53,7 +52,7 @@ class GameOver:
         player_name = self.prompt_for_name()
         return player_name
 
-    def prompt_for_name(self):
+    def prompt_for_name(self) -> str:
         """
         Display a prompt for the player to enter their name.
         """
@@ -96,23 +95,20 @@ class GameOver:
         pygame.mouse.set_visible(True)
         return player_name
 
-    def load_results(self, filename):
+    def load_results(self, filename: str) -> list[tuple[str, int]]:
         """
         Load existing results from the given file.
         """
         results = []
-        try:
-            with open(filename, "r") as file:
-                for line in file:
-                    parts = line.strip().split(",")
-                    if len(parts) == 2:
-                        name, score = parts
-                        results.append((name, int(score)))
-        except FileNotFoundError:
-            pass
+        with open(filename, "r") as file:
+            for line in file:
+                parts = line.strip().split(",")
+                if len(parts) == 2:
+                    name, score = parts
+                    results.append((name, int(score)))
         return results
 
-    def save_new_score(self, filename, score, player_name):
+    def save_new_score(self, filename: str, score: int, player_name: str) -> None:
         """
         Save the new score along with the player's name to the given file,
         keeping only the top 10 scores.

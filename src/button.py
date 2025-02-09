@@ -1,7 +1,8 @@
 import pygame
 
 class Button:
-    def __init__(self, text, x, y, width, height, font, color, hover_color):
+    def __init__(self, text: str, x: int, y: int, width: int, height: int, 
+                 font: pygame.font.Font, color: pygame.Color, hover_color: pygame.Color) -> None:
         """
         Initialize a button with text, position, dimensions, and colors.
         """
@@ -11,7 +12,7 @@ class Button:
         self.color = color
         self.hover_color = hover_color
 
-    def draw(self, screen, mouse_pos):
+    def draw(self, screen: pygame.Surface, mouse_pos: tuple[int, int]) -> None:
         """
         Draw the button on the screen with hover effect.
         """
@@ -21,7 +22,7 @@ class Button:
         text_rect = text_surface.get_rect(center=self.rect.center)
         screen.blit(text_surface, text_rect)
 
-    def is_clicked(self, event):
+    def is_clicked(self, event: pygame.event.Event) -> bool:
         """
         Check if the button has been clicked.
         """

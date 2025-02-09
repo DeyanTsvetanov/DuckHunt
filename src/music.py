@@ -1,7 +1,7 @@
 import pygame
 
 class Music:
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize the Music manager.
         """
@@ -16,7 +16,7 @@ class Music:
         self.duck_flapping_sound.set_volume(0.7)
         self.gunshot_sound.set_volume(0.8)
 
-    def play_music(self, music_file, loop=True):
+    def play_music(self, music_file: str, loop: bool = True) -> None:
         """
         Play background music.
         """
@@ -27,19 +27,19 @@ class Music:
         else:
             pygame.mixer.music.play()
 
-    def stop_music(self):
+    def stop_music(self) -> None:
         """
         Stop the background music.
         """
         pygame.mixer.music.stop()
 
-    def play_sound(self, sound):
+    def play_sound(self, sound: pygame.mixer.Sound) -> None:
         """
         Play a sound effect.
         """
         sound.play()
 
-    def stop_all_sounds(self):
+    def stop_all_sounds(self) -> None:
         """
         Stop all playing sounds.
         """

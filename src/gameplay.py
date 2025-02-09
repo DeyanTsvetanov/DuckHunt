@@ -6,7 +6,7 @@ from src.game_over import GameOver
 from src.game_ui import UI
 
 class Gameplay:
-    def __init__(self, mode="standard"):
+    def __init__(self, mode: str = "standard") -> None:
         """
         Initialize the game, load assets, and create objects.
         """
@@ -17,7 +17,7 @@ class Gameplay:
         self.music_manager = self.setup.get_music_manager()
         self.ducks = self.setup.get_ducks()
         self.current_duck = self.ducks[0]
-        self.new_duck_timer_start = None
+        self.new_duck_timer_start: int | None = None
         self.duck_switch_delay = 2.0
         self.duck_hits = 0
 
@@ -27,10 +27,10 @@ class Gameplay:
         self.running = True
         self.game_over_flag = False
 
-        self.total_time = None
-        self.lives = 3 if mode == "standard" else None
-        self.shots_remaining = 3 if mode == "standard" else None
-        self.start_time = None
+        self.total_time: float | None = None
+        self.lives: int | None = 3 if mode == "standard" else None
+        self.shots_remaining: int | None = 3 if mode == "standard" else None
+        self.start_time: int | None = None
 
         self.smaller_scope = self.setup.get_scope()
         self.ui_manager = UI(self.screen, self.font)
@@ -50,14 +50,14 @@ class Gameplay:
             self.current_duck = random.choice(self.ducks)
             self.current_duck.respawn(mode=self.mode)
 
-    def award_milestone_bonus(self):
+    def award_milestone_bonus(self) -> None:
         """
         Award bonus points for reaching a milestone.
         """
         milestone_bonus = 100 + (self.duck_hits // 5) * 5
         self.score += milestone_bonus
 
-    def process_hit(self, play_combo_sound=False):
+    def process_hit(self, play_combo_sound: bool = False) -> None:
         """
         Handle a successful duck hit.
         """
@@ -83,7 +83,7 @@ class Gameplay:
         self.current_duck.shot_time = pygame.time.get_ticks()
 
 
-    def check_shooting(self, mouse_pos):
+    def check_shooting(self, mouse_pos: tuple[int, int]) -> None:
         """
         Check if the duck was shot and update game state accordingly.
         """
@@ -95,9 +95,9 @@ class Gameplay:
                 self.shots_remaining = 3
             else:
                 self.process_hit()
-        elif self.mode == "standard":
+        elif self.mode == "standard" and self.shots_remaining is not None:
             self.shots_remaining -= 1
-            if self.shots_remaining == 0:
+            if self.shots_remaining == 0 and self.lives is not None:
                 self.lives -= 1
                 if self.lives > 0:
                     self.current_duck.make_duck_fly_off()
@@ -106,7 +106,7 @@ class Gameplay:
                     self.music_manager.play_sound(self.music_manager.game_over_sound)
                     self.running = False
 
-    def reset_game(self):
+    def reset_game(self) -> None:
         """
         Reset the game state to start a new game.
         """
@@ -115,8 +115,8 @@ class Gameplay:
         self.current_duck.respawn(mode=self.mode)
         self.running = True
         self.game_over_flag = False
-        self.current_duck.speed_x = 3
-        self.current_duck.speed_y = -3
+        self.current_duck.speed_x = 3.0
+        self.current_duck.speed_y = -3.0
         self.duck_hits = 0
 
         if self.mode == "standard":
@@ -125,7 +125,7 @@ class Gameplay:
         else:
             self.start_time = pygame.time.get_ticks()
 
-    def handle_game_over(self):
+    def handle_game_over(self) -> None:
         """
         Execute the game-over sequence.
         """
@@ -147,7 +147,7 @@ class Gameplay:
         self.running = False
         print("Exiting handle_game_over(), game loop stopped.")
 
-    def process_events(self):
+    def process_events(self) -> None:
         """
         Process user input.
         """
@@ -157,7 +157,7 @@ class Gameplay:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 self.check_shooting(event.pos)
 
-    def update(self):
+    def update(self) -> None:
         """
         Update game logic for duck status and game over conditions.
         """
@@ -169,6 +169,7 @@ class Gameplay:
                 self.game_over_flag = True
                 self.handle_game_over()
         else:
+            assert self.start_time is not None
             elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
             if self.total_time and elapsed_time >= self.total_time and not self.game_over_flag:
                 self.game_over_flag = True
@@ -178,7 +179,7 @@ class Gameplay:
         if self.current_duck.alive:
             self.current_duck.move()
 
-    def render(self):
+    def render(self) -> None:
         """
         Render all game elements.
         """
@@ -186,8 +187,12 @@ class Gameplay:
 
         # Drawing of UI elements
         if self.mode == "standard":
+            assert self.lives is not None
+            assert self.shots_remaining is not None
             self.ui_manager.draw_standard_ui(self.score, self.lives, self.shots_remaining)
         else:
+            assert self.start_time is not None
+            assert self.total_time is not None
             elapsed_time = (pygame.time.get_ticks() - self.start_time) / 1000
             remaining_time = max(int(self.total_time - elapsed_time), 0)
             self.ui_manager.draw_time_ui(self.score, remaining_time)
@@ -200,7 +205,7 @@ class Gameplay:
         self.screen.blit(self.smaller_scope, scope_rect)
         pygame.display.flip()
 
-    def run(self):
+    def run(self) -> None:
         """
         Main game loop.
         """
@@ -209,6 +214,7 @@ class Gameplay:
 
         if self.mode == "time":
             self.start_time = pygame.time.get_ticks()
+            assert self.total_time is not None
             self.total_time = 60
 
         while self.running:
@@ -217,7 +223,7 @@ class Gameplay:
             self.render()
             self.clock.tick(60)
 
-    def start(self):
+    def start(self) -> None:
         """
         Manage transitions between the menu, gameplay, and game-over screens.
         """

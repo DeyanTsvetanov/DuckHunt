@@ -2,9 +2,11 @@ import pygame
 import sys
 from src.music import Music
 from src.button import Button
+from collections.abc import Callable
 
 class Menu:
-    def __init__(self, screen, clock, background, change_background):
+    def __init__(self, screen: pygame.Surface, clock: pygame.time.Clock, 
+                 background: pygame.Surface, change_background: Callable[[], str]) -> None:
         """
         Initialize the menu with background and buttons.
         """
@@ -32,7 +34,7 @@ class Menu:
         self.music_manager = Music()
         self.music_manager.play_music(self.music_manager.title_music)
 
-    def display(self):
+    def display(self) -> None:
         """
         Display the menu screen with buttons and background.
         """
@@ -68,20 +70,20 @@ class Menu:
             pygame.display.flip()
             self.clock.tick(60)
 
-    def select_mode(self):
+    def select_mode(self) -> None:
         """
         Open submenu for game mode selection.
         """
         self.current_menu = "mode"
 
-    def start_game(self, mode):
+    def start_game(self, mode: str) -> None:
         """
         Close the menu and start the game in the specified mode.
         """
         self.running = False
         self.chosen_mode = mode
 
-    def load_results(self, filename):
+    def load_results(self, filename: str) -> list[tuple[str, int]]:
         """
         Load results from a file, returning a list of (name, score) tuples.
         """
@@ -91,7 +93,7 @@ class Menu:
         except FileNotFoundError:
             return []
 
-    def show_top_results(self):
+    def show_top_results(self) -> None:
         """
         Display the top results screen with a return button.
         """

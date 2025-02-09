@@ -15,7 +15,7 @@ ZIGZAG_CHANGE_CHANCE = 5          # Percentage chance for a zigzag movement
 
 
 class Duck:
-    def __init__(self, screen_width, screen_height, sprite_path, duck_type):
+    def __init__(self, screen_width: int, screen_height: int, sprite_path: str, duck_type: str) -> None:
         """
         Initialize the duck with animation and movement.
         """
@@ -36,8 +36,8 @@ class Duck:
         self.y_max = FLYING_WINDOW_HEIGHT - self.rect.height
 
         # Add movement speed
-        self.speed_x = DEFAULT_SPEED_X
-        self.speed_y = DEFAULT_SPEED_Y
+        self.speed_x: float = float(DEFAULT_SPEED_X)
+        self.speed_y: float = float(DEFAULT_SPEED_Y)
         self.flying_off_screen = False
         self.facing_right = self.speed_x > 0  # Set direction based on speed
         self.animation.set_direction(self.facing_right)
@@ -45,7 +45,7 @@ class Duck:
 
         self.respawn(initial_spawn=True)
         self.waiting_to_respawn = False
-        self.respawn_timer_start = None
+        self.respawn_timer_start: int | None = None
         self.respawn_delay = RESPAWN_DELAY
         self.alive = True
 
@@ -59,23 +59,23 @@ class Duck:
             shot_path = os.path.join(ASSETS_DIR, "special_duck_shot.png")
             self.shot_image = pygame.image.load(shot_path).convert_alpha()
         
-        self.shot_time = None  # To track when the duck was shot
+        self.shot_time: int | None = None  # To track when the duck was shot
         self.is_shot = False  # Indicator if the duck was recently shot
 
-    def make_duck_fly_off(self):
+    def make_duck_fly_off(self) -> None:
         """
         Make the duck fly off the screen.
         """
         self.flying_off_screen = True
         self.speed_y = -abs(self.speed_y) # Makes the duck go upwards
 
-    def move(self):
+    def move(self) -> None:
         """
         Moves the duck and ensures it bounces correctly.
         """
         if self.is_shot:
             # Check if enough time has passed to respawn the duck
-            if pygame.time.get_ticks() - self.shot_time > SHOT_DISPLAY_TIME:
+            if self.shot_time is not None and pygame.time.get_ticks() - self.shot_time > SHOT_DISPLAY_TIME:
                 self.is_shot = False
                 self.respawn()
             return
@@ -85,8 +85,8 @@ class Duck:
             if time_on_screen > 5:
                 self.make_duck_fly_off()
 
-            self.rect.x += self.speed_x
-            self.rect.y += self.speed_y
+            self.pos_x: float = float(self.rect.x)
+            self.pos_y: float = float(self.rect.y)
 
             # Update animation
             self.animation.update()
@@ -120,13 +120,13 @@ class Duck:
             if self.rect.y <= self.y_min:
                 self.speed_y = abs(self.speed_y)
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface) -> None:
         """
         Draw the duck on the screen
         """
         screen.blit(self.image, self.rect)
 
-    def respawn(self, mode="standard", initial_spawn=False):
+    def respawn(self, mode: str = "standard", initial_spawn: bool = False) -> None:
         """
         Respawns the duck at a valid position, either on the first spawn or after a delay.
         """
@@ -158,12 +158,12 @@ class Duck:
         # Start the timer for flying
         self.spawn_time = pygame.time.get_ticks()
 
-    def handle_respawn(self):
+    def handle_respawn(self) -> None:
         """
         Respawns the duck after the delay has passed.
         """
-        if self.waiting_to_respawn:
-            elapsed_time = (pygame.time.get_ticks() - self.respawn_timer_start) / 1000
+        if self.waiting_to_respawn and self.respawn_timer_start is not None:
+            elapsed_time: float = (pygame.time.get_ticks() - self.respawn_timer_start) / 1000
             if elapsed_time >= self.respawn_delay:
                 self.waiting_to_respawn = False
                 self.alive = True

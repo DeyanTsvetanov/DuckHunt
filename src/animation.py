@@ -1,7 +1,7 @@
 import pygame
 
 class Animation:
-    def __init__(self, sprite_sheet, frame_width, frame_height, animation_speed=10):
+    def __init__(self, sprite_sheet: pygame.Surface, frame_width: int, frame_height: int, animation_speed: int = 10) -> None:
         """
         Initialize the animation with a sprite sheet and frame dimensions.
         """
@@ -12,7 +12,7 @@ class Animation:
         self.animation_speed = animation_speed
         self.facing_right = True  # Default direction
 
-    def load_frames(self, sprite_sheet, frame_width, frame_height):
+    def load_frames(self, sprite_sheet: pygame.Surface, frame_width: int, frame_height: int) -> list[pygame.Surface]:
         """
         Extract frames from a sprite sheet.
         """
@@ -25,7 +25,7 @@ class Animation:
                 frames.append(frame)
         return frames
 
-    def update(self):
+    def update(self) -> None:
         """
         Update the animation by advancing to the next frame if enough time has passed.
         """
@@ -40,13 +40,13 @@ class Animation:
             
             self.animation_timer = 0
 
-    def set_direction(self, facing_right):
+    def set_direction(self, facing_right: bool) -> None:
         """
         Set the direction the animation is facing.
         """
         self.facing_right = facing_right
 
-    def get_current_frame(self):
+    def get_current_frame(self) -> pygame.Surface:
         """
         Get the current frame of the animation.
         """

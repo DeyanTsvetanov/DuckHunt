@@ -3,7 +3,7 @@ from src.duck import Duck
 from src.music import Music
 
 class Setup:
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize Pygame, create the window, and load assets.
         """
@@ -36,19 +36,19 @@ class Setup:
             Duck(self.screen_width, 360, "assets/final_special_duck.png", "special")
         ]
 
-    def get_screen(self):
+    def get_screen(self) -> pygame.Surface:
         """
         Return the Pygame screen surface.
         """
         return self.screen
 
-    def get_background(self):
+    def get_background(self) -> pygame.Surface:
         """
         Return the loaded background image.
         """
         return self.background
 
-    def change_background(self):
+    def change_background(self) -> str:
         """
         Cycle through the backgrounds and return the new path.
         """
@@ -57,25 +57,25 @@ class Setup:
         self.background = pygame.image.load(new_background_path).convert()
         return new_background_path
 
-    def get_font(self):
+    def get_font(self) -> pygame.font.Font:
         """
         Return the font object.
         """
         return self.font
 
-    def get_scope(self):
+    def get_scope(self) -> pygame.Surface:
         """
         Return the scope image.
         """
         return self.smaller_scope
 
-    def get_music_manager(self):
+    def get_music_manager(self) -> Music:
         """
         Return the music manager.
         """
         return self.music_manager
 
-    def get_ducks(self):
+    def get_ducks(self) -> list[Duck]:
         """
         Return the list of duck objects.
         """
